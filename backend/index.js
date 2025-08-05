@@ -19,7 +19,7 @@ dbConnection();
 //  Test Route
 app.get('/', (req, res) => {
     
-  res.send('Server is running!');
+  res.send('<h1>Server is running!</h1>');
 });
 app.use("/api/auth",authRoutes)
 //  Start server
