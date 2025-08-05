@@ -258,7 +258,7 @@ const AuthForm = () => {
     e.preventDefault();
     try {
 
-      const { data } = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/signin`,
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signin`,
       // const { data } = await axios.post(`http://localhost:5000/api/auth/signin`,
       { email: formData.email, password: formData.password })
       if (data.success) {

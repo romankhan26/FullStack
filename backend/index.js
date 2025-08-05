@@ -12,7 +12,21 @@ const app = express();
 //  Middleware
 app.use(express.json()); // Parses JSON body
 app.use(express.urlencoded({ extended: true })); // Parses form data
-app.use(cors()); // Enables CORS (Cross-Origin Resource Sharing)
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://full-stack-eat5.vercel.app/"
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+})); // Enables CORS (Cross-Origin Resource Sharing)
 //  Connect to MongoDB
 dbConnection();
 
