@@ -257,7 +257,7 @@ const AuthForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-
+console.log(import.meta.env.VITE_BACKEND_URL)
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signin`,
       // const { data } = await axios.post(`http://localhost:5000/api/auth/signin`,
       { email: formData.email, password: formData.password })
@@ -321,13 +321,13 @@ const AuthForm = () => {
               </div>
             </div>
          
-         {/* <NavLink to="/forgot-password"  >
+          {/* <NavLink to="/forgot-password"  > */}
           <button
               className="w-full px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105"
             >
              Forgot Password
             </button>
-         </NavLink> */}
+         {/* </NavLink>  */}
 
             <button
               type="submit"

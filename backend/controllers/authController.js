@@ -1,8 +1,9 @@
 // controllers/authController.js
 import User from "../models/User.js";
+import _sendEmail from "../utils/email.js";
 import { signInToken } from "../utils/token.js";
 import { signupValidation } from "../validators/authValidator.js";
-
+import jwt from "jsonwebtoken"
 export const signupHandler = async (req, res) => {
   try {
     // 1. Validate request
@@ -58,3 +59,102 @@ export const signInHandler = async (req, res) => {
     });
   }
 };
+
+//////////////////////////             FORGOT PASSWORD HANDLER
+export const forgotPswdHandler = async (req, res) => {
+  
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found"
+    });
+  }
+
+  ////// reset token
+
+  const resetToken = jwt.sign({ id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "12m" })
+
+  // reset frontend url
+
+  // const resetURL = `${process.env.WEBSITE_URL}/reset-password/${resetToken}`
+  const resetURL = `${process.env.WEBSITE_URL}?token=${resetToken}`
+
+  try {
+
+    await _sendEmail({
+      to: user.email,
+      subject: "Reset Password",
+      html: `
+         <div style="margin: 0 auto; width: 90%; height: 500px;">
+          <h1 style="color: gold;" >Reset Password</h1>
+          <p style="color: gray;">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam maxime vero libero.</p>
+          <p>Click here to reset <a href="${resetURL}">Reset </a></p>
+        </div>
+        `
+    })
+
+
+     res.status(200).json({
+      success: true,
+      message: "Password reset email sent successfully!"
+    });
+
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Email send Failed",
+      error: error.message
+    });
+  }
+  
+}
+
+
+
+
+//////////////////////////             RESET PASSWORD HANDLER
+export const ResetPswd = async (req, res) => {
+  const {token , password}= req.body
+  try {
+    
+ const decoded = jwt.verify(token , process.env.JWT_SECRET);
+
+ const user = await User.findById(decoded.id);
+
+   if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found"
+    });
+  }
+
+
+  ///// update user paswd
+
+  user.password = password;
+
+  user.save();
+
+
+  res.status(200).json({
+    success:true,
+    message:"Password updated successfully!"
+  })
+
+  } catch (error) {
+      res.status(500).json({
+      success: false,
+      message: "Password Reset Failed",
+      error: error.message
+    });
+  }
+}
+
+
+
+
